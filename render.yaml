@@ -1,0 +1,20 @@
+# render.yaml
+services:
+  - type: web
+    name: shopez-backend
+    runtime: node
+    plan: free
+    rootDir: shopez/server
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        value: https://shopez-vinuthna.netlify.app
+      - key: GOOGLE_API_KEY
+        value: AIzaSyDiemxcyeDSsVzkVb6UzWVkeG3__UEdADs
