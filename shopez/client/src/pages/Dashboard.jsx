@@ -83,7 +83,7 @@ const Dashboard = () => {
                 </Typography>
                 <Box sx={{ mt: 2, display: 'flex', alignItems: 'baseline', gap: 1 }}>
                   <Typography variant="h4">
-                    ${stock.currentPrice.toFixed(2)}
+                    ₹{stock.currentPrice.toLocaleString('en-IN')}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>

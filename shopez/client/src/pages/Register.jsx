@@ -1,27 +1,40 @@
 import React, { useState, useContext } from 'react';
-import { Container, Box, Typography, TextField, Button, Alert, Paper } from '@mui/material';
+import { Container, Box, Typography, TextField, Button, Alert, Paper, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { ToastContext } from '../context/ToastContext';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [userType, setUserType] = useState('USER');
   const [error, setError] = useState('');
   const { register } = useContext(AuthContext);
+  const { showToast } = useContext(ToastContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      return setError('Passwords do not match');
+      const pMatchErr = 'Passwords do not match';
+      setError(pMatchErr);
+      showToast(pMatchErr, 'warning');
+      return;
     }
     try {
-      await register(name, email, password);
-      navigate('/dashboard');
+      const data = await register(name, email, password, userType);
+      showToast('Registration successful! Welcome to SHOPEZ.', 'success');
+      if (data && (data.role === 'ADMIN' || data.userType === 'ADMIN')) {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to register');
+      const errMsg = err.response?.data?.message || 'Failed to register';
+      setError(errMsg);
+      showToast(errMsg, 'error');
     }
   };
 
@@ -83,6 +96,19 @@ const Register = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="usertype-select-label">Account Type</InputLabel>
+            <Select
+              labelId="usertype-select-label"
+              id="usertype-select"
+              value={userType}
+              label="Account Type"
+              onChange={(e) => setUserType(e.target.value)}
+            >
+              <MenuItem value="USER">Customer (User)</MenuItem>
+              <MenuItem value="ADMIN">Store Administrator (Admin)</MenuItem>
+            </Select>
+          </FormControl>
           <Button
             type="submit"
             fullWidth

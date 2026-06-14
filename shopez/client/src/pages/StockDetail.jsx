@@ -21,20 +21,22 @@ const StockDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [stockRes, portfolioRes] = await Promise.all([
-          api.get(`/stocks/${id}`),
-          api.get('/portfolio')
-        ]);
-        
+        // Fetch stock data — required
+        const stockRes = await api.get(`/stocks/${id}`);
         setStock(stockRes.data);
-        
-        // Find owned quantity for this stock
-        const holding = portfolioRes.data.holdings.find(h => h.stock?._id === id);
-        setOwnedQuantity(holding ? holding.quantity : 0);
-        
+
+        // Fetch portfolio — optional, don't crash if it fails (e.g. stale token)
+        try {
+          const portfolioRes = await api.get('/portfolio');
+          const holding = portfolioRes.data.holdings.find(h => h.stock?._id === id);
+          setOwnedQuantity(holding ? holding.quantity : 0);
+        } catch {
+          setOwnedQuantity(0);
+        }
+
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch data');
+        setError('Failed to fetch stock data. Please try again.');
         setLoading(false);
       }
     };
@@ -95,7 +97,7 @@ const StockDetail = () => {
                   <Typography variant="h6" color="text.secondary">{stock.name}</Typography>
                 </Box>
                 <Box sx={{ textAlign: 'right' }}>
-                  <Typography variant="h3">${stock.currentPrice.toFixed(2)}</Typography>
+                  <Typography variant="h3">₹{stock.currentPrice.toLocaleString('en-IN')}</Typography>
                   <Typography 
                     variant="h6" 
                     color={stock.dailyChange >= 0 ? 'success.main' : 'error.main'}
@@ -130,7 +132,7 @@ const StockDetail = () => {
                 Trade {stock.symbol}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                Available Balance: <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>${user.balance?.toLocaleString()}</Box>
+                Available Balance: <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>₹{user.balance?.toLocaleString('en-IN')}</Box>
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                 Owned Shares: <Box component="span" sx={{ color: 'primary.main', fontWeight: 'bold' }}>{ownedQuantity}</Box>
@@ -155,7 +157,7 @@ const StockDetail = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
                   <Typography>Estimated Cost:</Typography>
                   <Typography sx={{ fontWeight: 'bold' }}>
-                    ${(quantity * stock.currentPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ₹{(quantity * stock.currentPrice).toLocaleString('en-IN')}
                   </Typography>
                 </Box>
               </Box>

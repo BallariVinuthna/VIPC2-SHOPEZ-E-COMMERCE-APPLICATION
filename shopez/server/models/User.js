@@ -7,6 +7,11 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    username: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
     email: {
       type: String,
       required: true,
@@ -21,6 +26,11 @@ const userSchema = mongoose.Schema(
       default: 'https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg',
     },
     role: {
+      type: String,
+      enum: ['USER', 'ADMIN'],
+      default: 'USER',
+    },
+    userType: {
       type: String,
       enum: ['USER', 'ADMIN'],
       default: 'USER',

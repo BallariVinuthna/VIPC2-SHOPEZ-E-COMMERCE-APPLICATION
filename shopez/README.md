@@ -1,97 +1,124 @@
-# SHOPEZ - Virtual Trading E-Commerce Platform
+# SHOPEZ
 
-A premium, full-stack MERN (MongoDB, Express, React, Node.js) application that allows users to experience the thrill of the stock market through a simulated, risk-free environment. 
+SHOPEZ is a full-stack virtual trading platform built with React, Vite, Node.js, Express, and MongoDB. It simulates a stock trading experience with a virtual balance, portfolio tracking, market data, transaction history, and admin tools.
 
-![SHOPEZ Banner](https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=1200)
+## Project Overview
 
-## Features
+- Users can register and log in with secure JWT authentication.
+- Each user receives a virtual balance of $100,000 by default.
+- Users can browse available stocks, buy and sell shares, and view their portfolio.
+- All trades are recorded as BUY and SELL transactions.
+- Admin users can manage stock listings and review user transactions.
+- The frontend uses Material UI and Recharts to present charts and dashboards.
 
-- **User Authentication**: Secure JWT-based registration and login system with bcrypt password hashing.
-- **Virtual Portfolio**: Start with $100,000 virtual cash to buy and sell stocks.
-- **Live Market Dashboard**: Browse available stocks with real-time (simulated) pricing and daily changes.
-- **Interactive Charts**: Visualize stock trends using Recharts.
-- **Portfolio Tracking**: Monitor your investments, current market value, and net profit/loss with intuitive pie charts and data tables.
-- **Admin Dashboard**: Manage users and view all platform transactions (Requires `ADMIN` role).
-- **Modern UI/UX**: Built with Material UI featuring a sleek dark mode, glassmorphism elements, and responsive design.
+## Folder Structure
+
+- `client/` – React frontend powered by Vite
+- `server/` – Express backend with REST APIs
+- `server/config/` – MongoDB connection helper
+- `server/controllers/` – Request handlers for authentication, stocks, portfolio, transactions, and admin
+- `server/models/` – Mongoose schemas for User, Stock, Portfolio, and Transaction
+- `server/routes/` – API route definitions
+- `server/middleware/` – Authentication and admin middleware
+- `server/seeder.js` – Data seeding script for initial stock records
+
+## Key Features
+
+- JWT-based user registration and login
+- Virtual stock trading with buy/sell orders
+- Portfolio valuation and profit/loss calculation
+- Stock search and detail viewing
+- User transaction history
+- Admin stock management and transaction audit
+- Persistent user session via local storage
 
 ## Tech Stack
 
-- **Frontend**: React (Vite), React Router v6, Material UI, Recharts, Axios
-- **Backend**: Node.js, Express.js, MongoDB, Mongoose, JSON Web Tokens (JWT)
-- **Deployment Ready**: Configured for modern deployment platforms (Vercel/Render).
+- Frontend: React, Vite, React Router, Material UI, Recharts, Axios
+- Backend: Node.js, Express, MongoDB, Mongoose, JWT, bcrypt
+- Dev tools: Nodemon, ESLint
 
-## Installation
+## Setup and Running
 
 ### Prerequisites
-- Node.js (v18+)
-- MongoDB (Running locally or a MongoDB Atlas URI)
+- Node.js 18+ installed
+- MongoDB running locally or available through a MongoDB URI
 
-### 1. Clone the repository
-\`\`\`bash
-git clone <repository-url>
-cd shopez
-\`\`\`
+### Backend Setup
 
-### 2. Backend Setup
-\`\`\`bash
-cd server
+```bash
+cd shopez/server
 npm install
-\`\`\`
+```
 
-Create a `.env` file in the `server` directory:
-\`\`\`env
+Create a `.env` file in `shopez/server` with the following variables:
+
+```env
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/shopez
 JWT_SECRET=your_jwt_secret_key
 CLIENT_URL=http://localhost:5173
-\`\`\`
+```
 
 Seed the database with initial stock data:
-\`\`\`bash
+
+```bash
 node seeder.js
-\`\`\`
+```
 
-Start the backend development server:
-\`\`\`bash
+Start the backend server:
+
+```bash
 npm run dev
-\`\`\`
+```
 
-### 3. Frontend Setup
-Open a new terminal window:
-\`\`\`bash
-cd client
+### Frontend Setup
+
+```bash
+cd shopez/client
 npm install
-\`\`\`
-
-Start the frontend development server:
-\`\`\`bash
 npm run dev
-\`\`\`
+```
 
-The application will be running at `http://localhost:5173`.
+The frontend will normally be available at `http://localhost:5173`.
 
-## API Endpoints
+If you need to override the API base URL, create `shopez/client/.env` with:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+## API Reference
 
 ### Auth
-- \`POST /api/auth/register\` - Register new user
-- \`POST /api/auth/login\` - Authenticate user & get token
-- \`GET /api/auth/profile\` - Get user profile
+- `POST /api/auth/register` – Register a new user
+- `POST /api/auth/login` – Login and retrieve a JWT
+- `GET /api/auth/profile` – Get current user profile (authenticated)
 
 ### Stocks
-- \`GET /api/stocks\` - Fetch all stocks
-- \`GET /api/stocks/:id\` - Fetch single stock
+- `GET /api/stocks` – Fetch all stocks
+- `GET /api/stocks/:id` – Fetch a single stock
 
 ### Transactions
-- \`POST /api/transactions/buy\` - Buy stock
-- \`POST /api/transactions/sell\` - Sell stock
-- \`GET /api/transactions\` - Get user transactions
+- `POST /api/transactions/buy` – Buy stock shares
+- `POST /api/transactions/sell` – Sell stock shares
+- `GET /api/transactions` – Fetch user transaction history
 
 ### Portfolio
-- \`GET /api/portfolio\` - Get user portfolio
+- `GET /api/portfolio` – Fetch the current user portfolio
 
 ### Admin
-- \`GET /api/admin/users\` - Get all users
-- \`GET /api/admin/transactions\` - Get all transactions
+- `GET /api/admin/users` – Get all users
+- `POST /api/admin/stocks` – Add a new stock
+- `PUT /api/admin/stocks/:id` – Update an existing stock
+- `DELETE /api/admin/stocks/:id` – Remove a stock
+- `GET /api/admin/transactions` – Get all transactions
+
+## Notes
+
+- New users are created with role `USER` and a default balance of $100,000.
+- Only users with role `ADMIN` can access admin endpoints.
+- The seed script loads initial stock symbols and preserves existing user accounts.
 
 ## License
-MIT License
+MIT

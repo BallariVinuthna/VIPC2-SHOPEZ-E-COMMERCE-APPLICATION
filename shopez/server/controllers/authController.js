@@ -6,7 +6,7 @@ const generateToken = require('../utils/generateToken');
 // @access  Public
 const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, username, email, password, role, userType } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -15,18 +15,26 @@ const registerUser = async (req, res, next) => {
       throw new Error('User already exists');
     }
 
+    const displayName = name || username || email.split('@')[0];
+    const displayRole = role || userType || 'USER';
+
     const user = await User.create({
-      name,
+      name: displayName,
+      username: username || displayName,
       email,
       password,
+      role: displayRole,
+      userType: userType || displayRole,
     });
 
     if (user) {
       res.status(201).json({
         _id: user._id,
         name: user.name,
+        username: user.username,
         email: user.email,
         role: user.role,
+        userType: user.userType,
         balance: user.balance,
         token: generateToken(user._id),
       });
@@ -52,8 +60,10 @@ const loginUser = async (req, res, next) => {
       res.json({
         _id: user._id,
         name: user.name,
+        username: user.username,
         email: user.email,
         role: user.role,
+        userType: user.userType,
         balance: user.balance,
         token: generateToken(user._id),
       });
@@ -77,8 +87,10 @@ const getUserProfile = async (req, res, next) => {
       res.json({
         _id: user._id,
         name: user.name,
+        username: user.username,
         email: user.email,
         role: user.role,
+        userType: user.userType,
         balance: user.balance,
       });
     } else {

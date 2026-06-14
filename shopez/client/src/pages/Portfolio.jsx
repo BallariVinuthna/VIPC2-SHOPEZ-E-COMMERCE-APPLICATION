@@ -49,7 +49,7 @@ const Portfolio = () => {
             <CardContent>
               <Typography color="text.secondary" gutterBottom>Total Invested</Typography>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                ${portfolio?.totalInvested?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                ₹{portfolio?.totalInvested?.toLocaleString('en-IN') || '0.00'}
               </Typography>
             </CardContent>
           </Card>
@@ -59,7 +59,7 @@ const Portfolio = () => {
             <CardContent>
               <Typography color="text.secondary" gutterBottom>Current Market Value</Typography>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                ${portfolio?.currentMarketValue?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                ₹{portfolio?.currentMarketValue?.toLocaleString('en-IN') || '0.00'}
               </Typography>
             </CardContent>
           </Card>
@@ -75,7 +75,7 @@ const Portfolio = () => {
                   color: (portfolio?.netProfitLoss || 0) >= 0 ? 'success.main' : 'error.main'
                 }}
               >
-                {(portfolio?.netProfitLoss || 0) >= 0 ? '+' : '-'}${Math.abs(portfolio?.netProfitLoss || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {(portfolio?.netProfitLoss || 0) >= 0 ? '+' : '-'}₹{Math.abs(portfolio?.netProfitLoss || 0).toLocaleString('en-IN')}
               </Typography>
             </CardContent>
           </Card>
@@ -119,11 +119,11 @@ const Portfolio = () => {
                         {row.stock.symbol}
                       </TableCell>
                       <TableCell align="right">{row.quantity}</TableCell>
-                      <TableCell align="right">${row.averagePrice.toFixed(2)}</TableCell>
-                      <TableCell align="right">${currentPrice.toFixed(2)}</TableCell>
-                      <TableCell align="right">${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                      <TableCell align="right">₹{row.averagePrice.toLocaleString('en-IN')}</TableCell>
+                      <TableCell align="right">₹{currentPrice.toLocaleString('en-IN')}</TableCell>
+                      <TableCell align="right">₹{totalValue.toLocaleString('en-IN')}</TableCell>
                       <TableCell align="right" sx={{ color: returnVal >= 0 ? 'success.main' : 'error.main', fontWeight: 'bold' }}>
-                        {returnVal >= 0 ? '+' : '-'}${Math.abs(returnVal).toFixed(2)} ({returnPercent.toFixed(2)}%)
+                        {returnVal >= 0 ? '+' : '-'}₹{Math.abs(returnVal).toLocaleString('en-IN')} ({returnPercent.toFixed(2)}%)
                       </TableCell>
                     </TableRow>
                   );
@@ -155,7 +155,7 @@ const Portfolio = () => {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <RechartsTooltip formatter={(value) => `$${value.toLocaleString(undefined, { minimumFractionDigits: 2 })}`} />
+                    <RechartsTooltip formatter={(value) => `₹${value.toLocaleString('en-IN')}`} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>

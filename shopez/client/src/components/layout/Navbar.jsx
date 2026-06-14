@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, Avatar, Container } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, Avatar, Container, Badge } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import { CartContext } from '../../context/CartContext';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
+  const { cartItemsCount } = useContext(CartContext);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -20,8 +22,13 @@ const Navbar = () => {
 
   const handleLogout = () => {
     handleClose();
+    const isValAdmin = user && user.role === 'ADMIN';
     logout();
-    navigate('/');
+    if (isValAdmin) {
+      navigate('/admin/login');
+    } else {
+      navigate('/');
+    }
   };
 
   return (
@@ -47,27 +54,65 @@ const Navbar = () => {
             SHOPEZ
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          {/* Left Navigation links */}
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 1 }}>
             <Button component={Link} to="/dashboard" sx={{ my: 2, color: 'white', display: 'block' }}>
-              Market
+              Stocks Market
             </Button>
             {user && (
               <Button component={Link} to="/portfolio" sx={{ my: 2, color: 'white', display: 'block' }}>
-                Portfolio
+                Stocks Portfolio
               </Button>
             )}
-            {user && user.role === 'ADMIN' && (
-              <Button component={Link} to="/admin" sx={{ my: 2, color: 'warning.main', display: 'block' }}>
-                Admin Panel
+            
+            {/* E-Commerce shop links */}
+            <Button component={Link} to="/shop" sx={{ my: 2, color: 'secondary.light', display: 'block', fontWeight: 'bold' }}>
+              Shop Products
+            </Button>
+            {user && user.role === 'USER' && (
+              <Button component={Link} to="/orders" sx={{ my: 2, color: 'white', display: 'block' }}>
+                My Orders
               </Button>
+            )}
+
+            {/* Admin-only links */}
+            {user && user.role === 'ADMIN' && (
+              <>
+                <Button component={Link} to="/admin" sx={{ my: 2, color: 'warning.main', display: 'block', fontWeight: 'bold' }}>
+                  Admin Panel
+                </Button>
+                <Button component={Link} to="/admin/products" sx={{ my: 2, color: 'warning.light', display: 'block' }}>
+                  Manage Products
+                </Button>
+              </>
             )}
           </Box>
 
-          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap: 2 }}>
+          {/* Right Navigation controls */}
+          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap: 2.5 }}>
+            
+            {/* Cart Icon with badge count */}
+            {user && user.role === 'USER' && (
+              <IconButton 
+                component={Link} 
+                to="/cart" 
+                color="inherit"
+                sx={{ 
+                  bgcolor: 'rgba(236,72,153,0.1)', 
+                  color: 'secondary.main',
+                  '&:hover': { bgcolor: 'rgba(236,72,153,0.2)' }
+                }}
+              >
+                <Badge badgeContent={cartItemsCount} color="error">
+                  <ShoppingCartIcon />
+                </Badge>
+              </IconButton>
+            )}
+
             {user ? (
               <>
                 <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
-                  Balance: <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>${user.balance?.toLocaleString()}</Box>
+                  Wallet: <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>₹{user.balance?.toLocaleString('en-IN')}</Box>
                 </Typography>
                 <IconButton onClick={handleMenu} sx={{ p: 0 }}>
                   <Avatar alt={user.name} src={user.profileImage} />
@@ -89,8 +134,16 @@ const Navbar = () => {
                   onClose={handleClose}
                 >
                   <MenuItem disabled>
-                    <Typography textAlign="center">{user.name}</Typography>
+                    <Typography textAlign="center">{user.name} ({user.role})</Typography>
                   </MenuItem>
+                  <MenuItem onClick={handleClose} component={Link} to="/profile">
+                    <Typography textAlign="center">My Profile</Typography>
+                  </MenuItem>
+                  {user.role === 'ADMIN' && (
+                    <MenuItem onClick={handleClose} component={Link} to="/admin">
+                      <Typography textAlign="center">Console Dashboard</Typography>
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={handleLogout}>
                     <Typography textAlign="center" color="error">Logout</Typography>
                   </MenuItem>
@@ -98,6 +151,7 @@ const Navbar = () => {
               </>
             ) : (
               <>
+                <Button component={Link} to="/admin/login" color="warning" sx={{ fontSize: '0.85rem' }}>Admin Console</Button>
                 <Button component={Link} to="/login" color="inherit">Login</Button>
                 <Button component={Link} to="/register" variant="contained" color="primary">Sign Up</Button>
               </>
